@@ -4,13 +4,13 @@
 
 # How to use
 * clone this repo
-* include ```hash_map.h``` (see example below)
+* include ```HashMap.h``` (see example below)
 
 # Code example: 
 ```C++
 
 #include <iostream>
-#include "hash_map.h"
+#include "HashMap.h"
 
 HashMap <string, string> hash_map;
 hash_map["Hello"] = "world!";
@@ -22,3 +22,7 @@ for (auto element: hash_map) {
    std::cout << element.first << " " << element.second << '\n';
 }
 ```
+# Fine tuning
+You can change HashMap hyperparameters in file ```"HashMap.h"```:
+* max_load_factor (optimal = 0.70): the percentage at which the HashMap will increase its capacity,  <b>make it smaller to speed up answer time, but increase the HashMap capacity</b>
+* capacity_multiplier (optimal = 2.0): coefficient by which the memory size will increase, <b>make it bigger to speed up answer time, but increase the HashMap capacity </b>
