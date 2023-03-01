@@ -4,6 +4,7 @@
 #include <functional>
 #include <stdexcept>
 #include <map>
+#include <iomanip>
 
 void fail(const char *message) {
     std::cerr << "Fail:\n";
@@ -281,9 +282,9 @@ namespace internal_tests {
         check_iterators();
     }
 } // namespace internal_tests
-
-double hash_map_time() {
-    freopen("big_test.txt", "r", stdin);
+template<class HashTable>
+double hash_map_time(const char *file_name) {
+    freopen(file_name, "r", stdin);
     std::vector<std::vector<int>> queries;
     int n;
     std::cin >> n;
@@ -308,50 +309,7 @@ double hash_map_time() {
             queries.push_back({2, key});
         }
     }
-    HashMap<int, int> hm;
-    int start = clock();
-    for (int i = 0; i < queries.size(); ++i) {
-        if (queries[i][0] == 0) {
-            hm.find(queries[i][1]);
-        }
-        if (queries[i][0] == 1) {
-            hm.insert({queries[i][1], queries[i][2]});
-        }
-        if (queries[i][0] == 2) {
-            hm.erase(queries[i][1]);
-        }
-    }
-    int time = clock() - start;
-    return (double) time / CLOCKS_PER_SEC;
-}
-
-double unordered_map_time() {
-    freopen("big_test.txt", "r", stdin);
-    std::vector<std::vector<int>> queries;
-    int n;
-    std::cin >> n;
-    for (int i = 0; i < n; ++i) {
-        char type;
-        std::cin >> type;
-        if (type == '?') {
-            int key;
-            std::cin >> key;
-            queries.push_back({0, key});
-        }
-        if (type == '+') {
-            int key;
-            std::cin >> key;
-            int value;
-            std::cin >> value;
-            queries.push_back({1, key, value});
-        }
-        if (type == '-') {
-            int key;
-            std::cin >> key;
-            queries.push_back({2, key});
-        }
-    }
-    std::unordered_map<int, int> hm;
+    HashTable hm;
     int start = clock();
     for (int i = 0; i < queries.size(); ++i) {
         if (queries[i][0] == 0) {
@@ -390,15 +348,31 @@ void gen_test(const char *file_name, int n) {
             std::cout << key << "\n";
         }
     }
+    freopen("CON", "w", stdout);
+    std::cout.flush();
+    std::cerr.flush();
+}
+
+void print_results(const char *file_name) {
+    std::cout << std::fixed << std::setprecision(10) << "hash_map_time " << hash_map_time<HashMap<int, int>>(file_name)
+              << " seconds\n";
+    std::cout << std::fixed << std::setprecision(10) << "unordered_map_time "
+              << hash_map_time<std::unordered_map<int, int>>(file_name)
+              << " seconds\n";
 }
 
 void speed_test() {
-    gen_test("big_test.txt", 1e7);
-    freopen("CON","w",stdout);
-    std::cout.flush();
-    std::cerr.flush();
-    std::cout << "hash_map_time " << hash_map_time() << " seconds\n";
-    std::cout << "unordered_map_time " << unordered_map_time() << " seconds\n";
+    std::cout << "small_test\n";
+    gen_test("small_test.txt", 1e5);
+    print_results("small_test.txt");
+    std::cout << "\n\n\n";
+    std::cout << "middle_test\n";
+    gen_test("middle_test.txt", 1e7);
+    print_results("middle_test.txt");
+    std::cout << "\n\n\n";
+    std::cout << "large_test\n";
+    gen_test("large_test.txt", 1e8);
+    print_results("large_test.txt");
 }
 
 int main() {
